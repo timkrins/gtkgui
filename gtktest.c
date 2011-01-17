@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <math.h>
+#include <windows.h>
 
 typedef struct _components {
     GtkWidget *window;
@@ -104,23 +105,9 @@ static gboolean expose_event( GtkWidget *widget, GdkEventExpose *event )
             event->area.x, event->area.y,
             event->area.x, event->area.y,
             event->area.width, event->area.height);
+Sleep(50);
+#include "drawthis.c"
 
-int i;
-float center_x = 300;
-float center_y = 300;
-draw_brush(widget, center_x, center_y); //(50*xval)+
-float radius = 100;
-
-for(i = 0; i < 800; i++) { //for all values of x
-float xval = sqrt((radius*radius)-((i-center_x)*(i-center_y)));
-float otherxval = 0-sqrt((radius*radius)-((i-center_x)*(i-center_y)));
-if (xval>-100000000)
-{
-draw_brush(widget, i, xval+center_y); //(50*xval)+
-draw_brush(widget, i, otherxval+center_y); //(50*xval)+
-//draw_brush(widget, i, 400); //(50*xval)+
-}
-}
 
   return FALSE;
 }
