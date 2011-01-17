@@ -11,7 +11,7 @@ typedef struct _components {
     GdkPixmap *pixMap;
 } components;
 
-static     components this;
+static components this;
 
 static void next_handler( GtkWidget *widget,
                    gpointer   data )
@@ -54,15 +54,6 @@ static void createWindow() {
 }
 
 
-//static void createButtons() {
-//    this.next = gtk_button_new_with_label ("Next");
-//    this.previous = gtk_button_new_with_label ("Previous");
-
-//    g_signal_connect (G_OBJECT (this.next), "clicked", G_CALLBACK (next_handler), NULL);
-//    g_signal_connect (G_OBJECT (this.previous), "clicked", G_CALLBACK (previous_handler), NULL);
-
-//}
-
 static void layoutWidgets() {
     /* Create the graph navigation panel and add it to the window. */
     this.graphNavigationPanel = gtk_hbox_new (FALSE, 0);
@@ -70,14 +61,6 @@ static void layoutWidgets() {
 
     gtk_container_add  (GTK_CONTAINER (this.window), this.mainPanel);
 
-
-    /* Add the buttons to the graph navigation panel. */
-//    gtk_box_pack_start (GTK_BOX(this.graphNavigationPanel), this.previous, TRUE, TRUE, 0);
-//    gtk_box_pack_start (GTK_BOX(this.graphNavigationPanel), this.next,     TRUE, TRUE, 0);
-
-
-    /*Add the graph navigation panel to the main panel. */
-    gtk_box_pack_start (GTK_BOX(this.mainPanel), this.graphNavigationPanel, TRUE, TRUE, 0);
     /* Add the draw-able area to the main panel. */
     gtk_box_pack_start (GTK_BOX(this.mainPanel), this.drawingArea, TRUE, TRUE, 0);
 
@@ -88,35 +71,32 @@ static void layoutWidgets() {
 static void show() {
     gtk_widget_show (this.drawingArea);
     gtk_widget_show (this.mainPanel);
-//    gtk_widget_show (this.next);
-//    gtk_widget_show (this.previous);
-    gtk_widget_show (this.graphNavigationPanel);
     gtk_widget_show (this.window);
 }
 
-/* Draw a rectangle on the screen */
-static void
-draw_brush (GtkWidget *widget, gdouble x, gdouble y)
+/* Draw a dot */
+static void draw_brush (GtkWidget *widget, gdouble x, gdouble y)
 {
   GdkRectangle update_rect;
-
-  update_rect.x = x - 5;
-  update_rect.y = y - 5;
-  update_rect.width = 10;
-  update_rect.height = 10;
+  update_rect.x = x - 2;
+  update_rect.y = y - 2;
+  update_rect.width = 4;
+  update_rect.height = 4;
   gdk_draw_arc (this.pixMap,
                 widget->style->black_gc,
                 TRUE,
-              update_rect.x, update_rect.y,
-              update_rect.width, update_rect.height, 5, 5);
-  gtk_widget_queue_draw_area (widget,
-                              update_rect.x, update_rect.y,
-                      update_rect.width, update_rect.height);
+                update_rect.x, update_rect.y,
+                update_rect.width, update_rect.height,
+                10,
+                10);
+                gtk_widget_queue_draw_area (widget,
+                                            update_rect.x, update_rect.y,
+                                            update_rect.width, 
+                                            update_rect.height);
 }
 
 /* Redraw the screen from the backing pixmap */
-static gboolean
-expose_event( GtkWidget *widget, GdkEventExpose *event )
+static gboolean expose_event( GtkWidget *widget, GdkEventExpose *event )
 {
   gdk_draw_drawable(widget->window,
             widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
@@ -124,6 +104,23 @@ expose_event( GtkWidget *widget, GdkEventExpose *event )
             event->area.x, event->area.y,
             event->area.x, event->area.y,
             event->area.width, event->area.height);
+
+int i;
+float center_x = 300;
+float center_y = 300;
+draw_brush(widget, center_x, center_y); //(50*xval)+
+float radius = 100;
+
+for(i = 0; i < 800; i++) { //for all values of x
+float xval = sqrt((radius*radius)-((i-center_x)*(i-center_y)));
+float otherxval = 0-sqrt((radius*radius)-((i-center_x)*(i-center_y)));
+if (xval>-100000000)
+{
+draw_brush(widget, i, xval+center_y); //(50*xval)+
+draw_brush(widget, i, otherxval+center_y); //(50*xval)+
+//draw_brush(widget, i, 400); //(50*xval)+
+}
+}
 
   return FALSE;
 }
@@ -150,26 +147,20 @@ static gboolean configure_event( GtkWidget *widget, GdkEventConfigure *event )
 
 static gboolean button_press_event( GtkWidget *widget, GdkEventButton *event )
 {
-  if (event->button == 1 && this.pixMap != NULL) {
+//do nada
+  //if (event->button == 1 && this.pixMap != NULL) {
       //draw_brush (widget, (event->x)-50, (event->y)-50);
 
-int i;
-for(i = 0; i < 800; i++) {
-float xval = sin(i/(3*(2*3.14159)));
-/// x right y down
-if (xval)
-{
-draw_brush(widget, i, (50*xval)+300);
-}
-}
-}
 
+//}
   return TRUE;
 }
 
 static gboolean
 motion_notify_event( GtkWidget *widget, GdkEventMotion *event )
 {
+//do nix
+/*
   int x, y;
   GdkModifierType state;
 
@@ -184,7 +175,7 @@ motion_notify_event( GtkWidget *widget, GdkEventMotion *event )
 
   if (state & GDK_BUTTON1_MASK && this.pixMap != NULL)
     draw_brush (widget, x+50, y+50);
-
+*/
   return TRUE;
 }
 
