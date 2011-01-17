@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <math.h>
 
 typedef struct _components {
     GtkWidget *window;
@@ -103,11 +104,11 @@ draw_brush (GtkWidget *widget, gdouble x, gdouble y)
   update_rect.y = y - 5;
   update_rect.width = 10;
   update_rect.height = 10;
-  gdk_draw_rectangle (this.pixMap,
+  gdk_draw_arc (this.pixMap,
                 widget->style->black_gc,
                 TRUE,
               update_rect.x, update_rect.y,
-              update_rect.width, update_rect.height);
+              update_rect.width, update_rect.height, 5, 5);
   gtk_widget_queue_draw_area (widget,
                               update_rect.x, update_rect.y,
                       update_rect.width, update_rect.height);
@@ -127,8 +128,7 @@ expose_event( GtkWidget *widget, GdkEventExpose *event )
   return FALSE;
 }
 /* Create a new backing pixmap of the appropriate size */
-static gboolean
-configure_event( GtkWidget *widget, GdkEventConfigure *event )
+static gboolean configure_event( GtkWidget *widget, GdkEventConfigure *event )
 {
   if (this.pixMap)
     g_object_unref(this.pixMap);
@@ -148,11 +148,21 @@ configure_event( GtkWidget *widget, GdkEventConfigure *event )
   return TRUE;
 }
 
-static gboolean
-button_press_event( GtkWidget *widget, GdkEventButton *event )
+static gboolean button_press_event( GtkWidget *widget, GdkEventButton *event )
 {
-  if (event->button == 1 && this.pixMap != NULL)
-      draw_brush (widget, (event->x)-50, (event->y)-50);
+  if (event->button == 1 && this.pixMap != NULL) {
+      //draw_brush (widget, (event->x)-50, (event->y)-50);
+
+int i;
+for(i = 0; i < 800; i++) {
+float xval = sin(i/(3*(2*3.14159)));
+/// x right y down
+if (xval)
+{
+draw_brush(widget, i, (50*xval)+300);
+}
+}
+}
 
   return TRUE;
 }
